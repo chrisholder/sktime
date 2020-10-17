@@ -51,19 +51,24 @@ from sklearn.preprocessing import FunctionTransformer
 from sklearn.tree import DecisionTreeClassifier
 from statsmodels.tsa.stattools import acf
 
+#classifier imports
+from sktime.classification.dictionary_based import TemporalDictionaryEnsemble
+from sktime.classification.dictionary_based import BOSSEnsemble
+from sktime.classification.frequency_based import RandomIntervalSpectralForest
+from sktime.classification.interval_based import TimeSeriesForest
+from sktime.classification.shapelet_based import ShapeletTransformClassifier
+from sktime.classification.distance_based import ProximityForest
+from sktime.classification.distance_based import ElasticEnsemble
+from sktime.classification.distance_based import ProximityTree
+from sktime.classification.distance_based import ProximityStump
+from sktime.classification.distance_based import KNeighborsTimeSeriesClassifier
+
+
 import sktime.classification.compose._ensemble as ensemble
-import sktime.classification.dictionary_based._boss as db
-import sktime.classification.dictionary_based._tde as tde
-import sktime.classification.frequency_based._rise as fb
-import sktime.classification.interval_based._tsf as ib
-import sktime.classification.distance_based._elastic_ensemble as dist
-import sktime.classification.distance_based._time_series_neighbors as nn
-import sktime.classification.distance_based._proximity_forest as pf
-import sktime.classification.shapelet_based._stc as st
+
 from sktime.utils.load_data import load_from_tsfile_to_dataframe as load_ts
 from sktime.transformers.series_as_features.compose import RowTransformer
 from sktime.transformers.series_as_features.segment import RandomIntervalSegmenter
-
 from sktime.transformers.series_as_features.reduce import Tabularizer
 from sklearn.pipeline import Pipeline
 from sklearn.pipeline import FeatureUnion
@@ -250,28 +255,27 @@ def set_classifier(cls, resampleId):
 
     """
     if cls.lower() == 'pf':
-        return pf.ProximityForest(random_state = resampleId)
+        return ProximityForest(random_state = resampleId)
     elif cls.lower() == 'pt':
-        return pf.ProximityTree(random_state = resampleId)
+        return ProximityTree(random_state = resampleId)
     elif cls.lower() == 'ps':
-        return pf.ProximityStump(random_state = resampleId)
+        return ProximityStump(random_state = resampleId)
     elif cls.lower() == 'rise':
-        return fb.RandomIntervalSpectralForest(random_state = resampleId)
+        return RandomIntervalSpectralForest(random_state = resampleId)
     elif  cls.lower() == 'tsf':
-        return ib.TimeSeriesForest(random_state = resampleId)
+        return TimeSeriesForest(random_state=resampleId)
     elif cls.lower() == 'boss':
-        return db.BOSSEnsemble(random_state=resampleId)
+        return BOSSEnsemble(random_state=resampleId)
     elif cls.lower() == 'cboss':
-        return db.BOSSEnsemble(random_state=resampleId,
-                               randomised_ensemble=True, max_ensemble_size=50)
+        return BOSSEnsemble(random_state=resampleId, randomised_ensemble=True, max_ensemble_size=50)
     elif cls.lower() == 'tde':
-        return tde.TemporalDictionaryEnsemble(random_state=resampleId)
+        return TemporalDictionaryEnsemble(random_state=resampleId)
     elif cls.lower() == 'st':
-        return st.ShapeletTransformClassifier(time_contract_in_mins=1500)
+        return ShapeletTransformClassifier(time_contract_in_mins=1500)
     elif cls.lower() == 'dtwcv':
-        return nn.KNeighborsTimeSeriesClassifier(metric="dtwcv")
+        return KNeighborsTimeSeriesClassifier(metric="dtwcv")
     elif cls.lower() == 'ee' or cls.lower() == 'elasticensemble':
-        return dist.ElasticEnsemble()
+        return ElasticEnsemble()
     elif cls.lower() == 'tsfcomposite':
         #It defaults to TSF
         return ensemble.TimeSeriesForestClassifier()
@@ -585,13 +589,12 @@ if __name__ == "__main__":
 #        results_dir = "/scratch/results"
 #         data_dir = "/bench/datasets/Univariate2018/"
 #         results_dir = "C:/Users/ajb/Dropbox/Turing Project/Results/"
-        data_dir = "Z:/ArchiveData/Univariate_ts/"
-        results_dir = "E:/Temp/"
-#        results_dir = "Z:/Results/sktime Bakeoff/"
-        dataset = "GunPoint"
+        data_dir = "C:/Temp/"
+        results_dir = "C:/Temp/"
+        dataset = "Chinatown"
         trainX, trainY = load_ts(data_dir + dataset + '/' + dataset + '_TRAIN.ts')
         testX, testY = load_ts(data_dir + dataset + '/' + dataset + '_TEST.ts')
-        classifier = "TDE"
+        classifier = "TSF"
         resample = 0
 #         for i in range(0, len(univariate_datasets)):
 #             dataset = univariate_datasets[i]
